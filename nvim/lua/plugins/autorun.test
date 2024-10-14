@@ -1,0 +1,21 @@
+local bufnum = 18
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+  group = vim.api.nvim_create_autocmd("RunOnSave", { clear = true }),
+  pattern = "*.jl",
+  callback = function()
+    vim.fn.jobstart({ "julia" }, {
+      stdout_buffered = true,
+      on_stdout = function(_, data)
+        if data then
+          vim.api.nvim_buf_set_lines(bufnum, -1, -1, false, data)
+        end
+      end,
+      on_stderr = function(_, data)
+        if data then
+          vim.api.nvim_buf_set_lines(bufnum, -1, -1, false, data)
+        end
+      end,
+    })
+  end,
+})
